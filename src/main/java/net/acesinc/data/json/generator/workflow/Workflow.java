@@ -6,11 +6,7 @@
 
 package net.acesinc.data.json.generator.workflow;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  *
@@ -25,6 +21,11 @@ public class Workflow {
     private long timeBetweenRepeat;
     private boolean varyRepeatFrequency;
     private String stepRunMode;
+
+    //TODO: Path date format here:
+    private String simpleDateFormatSt;
+
+    //SimpleDateFormat ETP_DF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSSSSS");
     
     public Workflow() {
         steps = new ArrayList<>();

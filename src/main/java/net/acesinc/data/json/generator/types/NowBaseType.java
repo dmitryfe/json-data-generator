@@ -16,14 +16,21 @@ public abstract class NowBaseType extends TypeHandler {
     //note, this can be a negative number, so you are subtracting
 
     private long timeToAdd = 0;
+    private String dateTimeFirmat = "yyyy/MM/dd HH:mm:ss.SS";
     
     @Override
     public void setLaunchArguments(String[] launchArguments) {
         super.setLaunchArguments(launchArguments);
-        if (launchArguments.length == 0) {
-            timeToAdd = 0;
-        } else {
-            timeToAdd = getTimeOffset(launchArguments[0]);
+        timeToAdd = 0;
+        dateTimeFirmat = "yyyy/MM/dd HH:mm:ss.SS";
+
+        for(String arg : launchArguments){
+            if (arg.contains("_")){
+                timeToAdd = getTimeOffset(arg);
+            }
+            if (arg.contains(":")){
+                dateTimeFirmat = arg;
+            }
         }
     }
     
@@ -78,6 +85,10 @@ public abstract class NowBaseType extends TypeHandler {
         } else {
             return new Date(new Date().getTime() + timeToAdd);
         }
+    }
+
+    public String getDateFormatString(){
+        return dateTimeFirmat;
     }
     
 }

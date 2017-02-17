@@ -5,17 +5,18 @@
  */
 package net.acesinc.data.json.generator;
 
+import net.acesinc.data.json.generator.config.JSONConfigReader;
+import net.acesinc.data.json.generator.config.SimulationConfig;
+import net.acesinc.data.json.generator.log.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.eclipse.paho.client.mqttv3.MqttException;
+
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import net.acesinc.data.json.generator.config.SimulationConfig;
-import net.acesinc.data.json.generator.config.JSONConfigReader;
-import net.acesinc.data.json.generator.log.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.eclipse.paho.client.mqttv3.MqttException;
 
 /**
  *
@@ -37,6 +38,11 @@ public class JsonDataGenerator {
             for (Map<String, Object> elProps : simConfig.getProducers()) {
                 String elType = (String) elProps.get("type");
                 switch (elType) {
+                    case "json-events-file": {
+                        log.info("Adding File Logger with properties: " + elProps);
+                        loggers.add(new JsonRowsFilesLogger(elProps));
+                        break;
+                    }
                     case "logger": {
                         log.info("Adding Log4JLogger Producer");
                         loggers.add(new Log4JLogger());
@@ -108,7 +114,8 @@ public class JsonDataGenerator {
     }
 
     public static void main(String[] args) {
-        String simConfig = "defaultSimConfig.json";
+
+        String simConfig = "FluxFluxSimulation.json";
         if (args.length > 0) {
             simConfig = args[0];
             log.info("Overriding Simulation Config file from command line to use [ " + simConfig + " ]");

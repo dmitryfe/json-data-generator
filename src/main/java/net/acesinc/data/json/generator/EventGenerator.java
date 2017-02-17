@@ -5,20 +5,14 @@
  */
 package net.acesinc.data.json.generator;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
 import net.acesinc.data.json.generator.log.EventLogger;
 import net.acesinc.data.json.generator.workflow.Workflow;
 import net.acesinc.data.json.generator.workflow.WorkflowStep;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.IOException;
+import java.util.*;
 
 /**
  *
@@ -36,9 +30,24 @@ public class EventGenerator implements Runnable {
     private long generatedEvents = 0;
 
     public EventGenerator(Workflow workflow, String generatorName, List<EventLogger> loggers) {
-        this.workflow = workflow;
+        this.workflow = configCountModifier(workflow);
         this.generatorName = generatorName;
         this.eventLoggers = loggers;
+    }
+
+    private Workflow configCountModifier(Workflow workflow) {
+        Workflow wf = new Workflow();
+
+        for(WorkflowStep ws : workflow.getSteps()){
+            if(ws.getProducerConfig().containsKey("stepsConfigCount")){
+                int stepsConfigCount = (Integer) ws.getProducerConfig().get("stepsConfigCount");
+                for(int i=0;i<stepsConfigCount;i++){
+                    wf.getSteps().add(ws);
+                }
+            }
+            else wf.getSteps().add(ws);
+        }
+        return wf;
     }
 
     public void runWorkflow() {
@@ -124,7 +133,9 @@ public class EventGenerator implements Runnable {
             }
         }
     }
-    
+
+
+
     protected void executeStep(WorkflowStep step) {
         if (step.getDuration() == 0) {
             //Just generate this event and move on to the next one
@@ -133,6 +144,9 @@ public class EventGenerator implements Runnable {
                 wrapper.put(null, config);
                 try {
                     String event = generateEvent(wrapper);
+
+                    // TODO: Logger per event output. Check file extension and make a decision
+
                     for (EventLogger l : eventLoggers) {
                         l.logEvent(event, step.getProducerConfig());
                     }

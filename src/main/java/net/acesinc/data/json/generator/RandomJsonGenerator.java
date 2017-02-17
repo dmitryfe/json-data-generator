@@ -6,6 +6,16 @@
 package net.acesinc.data.json.generator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.acesinc.data.json.generator.types.TypeHandler;
+import net.acesinc.data.json.generator.types.TypeHandlerFactory;
+import net.acesinc.data.json.util.JsonUtils;
+import org.apache.commons.math3.random.RandomDataGenerator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import javax.json.Json;
+import javax.json.stream.JsonGenerator;
+import javax.json.stream.JsonGeneratorFactory;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
@@ -13,15 +23,6 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import javax.json.Json;
-import javax.json.stream.JsonGenerator;
-import javax.json.stream.JsonGeneratorFactory;
-import net.acesinc.data.json.generator.types.TypeHandler;
-import net.acesinc.data.json.generator.types.TypeHandlerFactory;
-import net.acesinc.data.json.util.JsonUtils;
-import org.apache.commons.math3.random.RandomDataGenerator;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -30,6 +31,7 @@ import org.apache.logging.log4j.Logger;
 public class RandomJsonGenerator {
 
     private static final Logger log = LogManager.getLogger(RandomJsonGenerator.class);
+    // TODO: here you can modify cross project date format
     private SimpleDateFormat iso8601DF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
     private Map<String, Object> config;
@@ -44,7 +46,7 @@ public class RandomJsonGenerator {
 
     public String generateJson() {
         StringWriter w = new StringWriter();
-        javax.json.stream.JsonGenerator gen = factory.createGenerator(w);
+        JsonGenerator gen = factory.createGenerator(w);
         generatedValues = new LinkedHashMap<>();
 
         processProperties(gen, config, "");
@@ -70,7 +72,7 @@ public class RandomJsonGenerator {
         return mapper.readValue(json, List.class);
     }
 
-    private javax.json.stream.JsonGenerator processProperties(javax.json.stream.JsonGenerator gen, Map<String, Object> props, String currentContext) {
+    private JsonGenerator processProperties(JsonGenerator gen, Map<String, Object> props, String currentContext) {
 //        Map<String, Object> outputValues = new LinkedHashMap<>();
         for (String propName : props.keySet()) {
             Object value = props.get(propName);
@@ -138,7 +140,7 @@ public class RandomJsonGenerator {
                 String newContext = "";
                 if (propName != null) {
                     gen.writeStartArray(propName);
-                    
+
                     if (currentContext.isEmpty()) {
                         newContext = propName;
                     } else {
@@ -185,6 +187,29 @@ public class RandomJsonGenerator {
                             }
                         }
                     } else { //it's not a special function, so just add it
+
+                        // TODO: BUG
+
+                        for(int i=0; i < listOfItems.size(); i++){
+                            value = listOfItems.get(i);
+
+                            if (String.class.isAssignableFrom(value.getClass())) {
+                                String type = (String) value;
+
+                                try {
+                                    TypeHandler th = TypeHandlerFactory.getInstance().getTypeHandler(type, generatedValues, currentContext + propName + "[" + i + "]");
+
+                                    if (th != null) {
+                                        Object val = th.getNextRandomValue();
+                                        listOfItems.set(i,val);
+                                    }
+                                } catch (IllegalArgumentException iae) {
+                                    log.warn("Error creating type [ " + type + " ]. Prop [ " + propName + " ] being ignored in output.  Reason: " + iae.getMessage());
+                                    log.debug("Error creating type [ " + type + " ]. Prop [ " + propName + " ] being ignored in output.", iae);
+                                }
+                            }
+
+                        }
                         processList(listOfItems, gen, newContext);
                     }
                 }
@@ -221,7 +246,7 @@ public class RandomJsonGenerator {
         }
     }
 
-    private javax.json.stream.JsonGenerator addValue(javax.json.stream.JsonGenerator gen, String propName, Object val) {
+    private JsonGenerator addValue(JsonGenerator gen, String propName, Object val) {
         if (val == null) {
             gen.writeNull(propName);
         } else if (String.class.isAssignableFrom(val.getClass())) {
