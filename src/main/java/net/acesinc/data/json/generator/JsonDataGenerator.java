@@ -38,9 +38,14 @@ public class JsonDataGenerator {
             for (Map<String, Object> elProps : simConfig.getProducers()) {
                 String elType = (String) elProps.get("type");
                 switch (elType) {
-                    case "json-events-file": {
+                    case "json-file": {
                         log.info("Adding File Logger with properties: " + elProps);
-                        loggers.add(new JsonRowsFilesLogger(elProps));
+                        loggers.add(new JsonFileLogger(elProps));
+                        break;
+                    }
+                    case "csv-file": {
+                        log.info("Adding File Logger with properties: " + elProps);
+                        loggers.add(new CSVFileLogger(elProps));
                         break;
                     }
                     case "logger": {

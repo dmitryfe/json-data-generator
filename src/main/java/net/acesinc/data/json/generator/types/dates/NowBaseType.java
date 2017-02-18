@@ -3,7 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.acesinc.data.json.generator.types;
+package net.acesinc.data.json.generator.types.dates;
+
+import net.acesinc.data.json.generator.types.TypeHandler;
 
 import java.util.Date;
 
@@ -16,20 +18,20 @@ public abstract class NowBaseType extends TypeHandler {
     //note, this can be a negative number, so you are subtracting
 
     private long timeToAdd = 0;
-    private String dateTimeFirmat = "yyyy/MM/dd HH:mm:ss.SS";
+    private String dateTimeFormat = "yyyy/MM/dd HH:mm:ss.SS";
     
     @Override
     public void setLaunchArguments(String[] launchArguments) {
         super.setLaunchArguments(launchArguments);
         timeToAdd = 0;
-        dateTimeFirmat = "yyyy/MM/dd HH:mm:ss.SS";
+        dateTimeFormat = "yyyy/MM/dd HH:mm:ss.SS";
 
         for(String arg : launchArguments){
             if (arg.contains("_")){
                 timeToAdd = getTimeOffset(arg);
             }
             if (arg.contains(":")){
-                dateTimeFirmat = arg;
+                dateTimeFormat = arg;
             }
         }
     }
@@ -88,7 +90,7 @@ public abstract class NowBaseType extends TypeHandler {
     }
 
     public String getDateFormatString(){
-        return dateTimeFirmat;
+        return dateTimeFormat;
     }
     
 }

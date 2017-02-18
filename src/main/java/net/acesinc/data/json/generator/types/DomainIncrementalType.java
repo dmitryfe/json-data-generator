@@ -31,7 +31,7 @@ public class DomainIncrementalType extends TypeHandler {
         }
         prefixName = launchArguments[0];
         if (namedCounterMap.get(prefixName) == null) {
-            namedCounterMap.put(prefixName, 0l);
+            namedCounterMap.put(prefixName, 1l);
         }
     }
     

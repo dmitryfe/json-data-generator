@@ -8,9 +8,11 @@ package net.acesinc.data.json.generator;
 import net.acesinc.data.json.generator.log.EventLogger;
 import net.acesinc.data.json.generator.workflow.Workflow;
 import net.acesinc.data.json.generator.workflow.WorkflowStep;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -147,9 +149,34 @@ public class EventGenerator implements Runnable {
 
                     // TODO: Logger per event output. Check file extension and make a decision
 
-                    for (EventLogger l : eventLoggers) {
-                        l.logEvent(event, step.getProducerConfig());
+                    if(step.getProducerConfig().containsKey("file")){
+                        // when file defined, logger is per config
+                        Map<String,EventLogger> LoggersMapper = new HashMap<>();
+                        EventLogger loggerSelected;
+
+                        // TODO: handle cases
+                        String fileName = (String) step.getProducerConfig().get("file");
+                        String format = (String) step.getProducerConfig().get("format");
+                        boolean gzip = (boolean) step.getProducerConfig().get("gzip");
+                        String path = generatorName + "/" + fileName;
+
+
+
+                        for (EventLogger l : eventLoggers) {
+                            LoggersMapper.put(l.getClass().getSimpleName(),l);
+                        }
+
+                        step.getProducerConfig().put("outPath",path);
+                        LoggersMapper.get(format).logEvent(event, step.getProducerConfig());
+
+
+
+                    } else{
+                        for (EventLogger l : eventLoggers) {
+                            l.logEvent(event, step.getProducerConfig());
+                        }
                     }
+
                     try {
                         performEventSleep(workflow);
                     } catch (InterruptedException ie) {

@@ -5,24 +5,26 @@
  */
 package net.acesinc.data.json.generator.types;
 
-import java.util.Random;
+import net.acesinc.data.json.generator.content.FileResource;
 
 /**
  *
  * @author andrewserff
  */
-public class BooleanType extends TypeHandler {
-    public static final String TYPE_NAME = "boolean";
-    public static final String TYPE_DISPLAY_NAME = "Boolean";
+public class SinkholeMailType extends TypeHandler {
+
+    public static final String TYPE_NAME = "sinkholeMail";
+    public static final String TYPE_DISPLAY_NAME = "Sinkhole eMail";
 
     @Override
-    public Boolean getNextRandomValue() {
-        return new Random().nextBoolean();
+    public String getNextRandomValue() {
+        return FileResource.getInstance().getRamdomSinkholeMail();
+
     }
-    
+
     @Override
     public String getName() {
         return TYPE_NAME;
     }
-            
+
 }

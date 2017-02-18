@@ -19,10 +19,7 @@ import javax.json.stream.JsonGeneratorFactory;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  *
@@ -31,7 +28,6 @@ import java.util.Map;
 public class RandomJsonGenerator {
 
     private static final Logger log = LogManager.getLogger(RandomJsonGenerator.class);
-    // TODO: here you can modify cross project date format
     private SimpleDateFormat iso8601DF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
     private Map<String, Object> config;
@@ -76,11 +72,15 @@ public class RandomJsonGenerator {
 //        Map<String, Object> outputValues = new LinkedHashMap<>();
         for (String propName : props.keySet()) {
             Object value = props.get(propName);
+
             if (value == null) {
 //                outputValues.put(propName, null);
                 generatedValues.put(currentContext + propName, null);
                 addValue(gen, propName, null);
-            } else if (String.class.isAssignableFrom(value.getClass())) {
+            }
+
+
+            else if (String.class.isAssignableFrom(value.getClass())) {
                 String type = (String) value;
 
                 if (type.startsWith("this.") || type.startsWith("cur.")) {
@@ -116,7 +116,10 @@ public class RandomJsonGenerator {
                         log.debug("Error creating type [ " + type + " ]. Prop [ " + propName + " ] being ignored in output.", iae);
                     }
                 }
-            } else if (Map.class.isAssignableFrom(value.getClass())) {
+            }
+
+
+            else if (Map.class.isAssignableFrom(value.getClass())) {
                 //nested object
                 Map<String, Object> nestedProps = (Map<String, Object>) value;
                 if (propName == null) {
@@ -134,7 +137,10 @@ public class RandomJsonGenerator {
                 }
                 processProperties(gen, nestedProps, newContext);
                 gen.writeEnd();
-            } else if (List.class.isAssignableFrom(value.getClass())) {
+            }
+
+
+            else if (List.class.isAssignableFrom(value.getClass())) {
                 //array
                 List<Object> listOfItems = (List<Object>) value;
                 String newContext = "";
@@ -186,31 +192,27 @@ public class RandomJsonGenerator {
                                 break;
                             }
                         }
-                    } else { //it's not a special function, so just add it
+                    }
+                    else { //it's not a special function, so just add it
+                        List<Object> subList = new ArrayList<>(listOfItems);
 
-                        // TODO: BUG
+                        for(int i=0;i<subList.size();i++){
+                            String type = subList.get(i).toString();
+                            try{
+                                TypeHandler th = TypeHandlerFactory.getInstance().getTypeHandler(type, generatedValues, currentContext + propName + "[" + i + "]");
 
-                        for(int i=0; i < listOfItems.size(); i++){
-                            value = listOfItems.get(i);
-
-                            if (String.class.isAssignableFrom(value.getClass())) {
-                                String type = (String) value;
-
-                                try {
-                                    TypeHandler th = TypeHandlerFactory.getInstance().getTypeHandler(type, generatedValues, currentContext + propName + "[" + i + "]");
-
-                                    if (th != null) {
-                                        Object val = th.getNextRandomValue();
-                                        listOfItems.set(i,val);
-                                    }
-                                } catch (IllegalArgumentException iae) {
-                                    log.warn("Error creating type [ " + type + " ]. Prop [ " + propName + " ] being ignored in output.  Reason: " + iae.getMessage());
-                                    log.debug("Error creating type [ " + type + " ]. Prop [ " + propName + " ] being ignored in output.", iae);
+                                if(th != null){
+                                    Object val = th.getNextRandomValue();
+                                    subList.set(i,val);
                                 }
-                            }
 
-                        }
-                        processList(listOfItems, gen, newContext);
+                            } catch (IllegalArgumentException iae) {
+                            log.warn("Error creating type [ " + type + " ]. Prop [ " + propName + " ] being ignored in output.  Reason: " + iae.getMessage());
+                            log.debug("Error creating type [ " + type + " ]. Prop [ " + propName + " ] being ignored in output.", iae);
+                            }
+                          }
+
+                        processList(subList, gen, newContext);
                     }
                 }
                 gen.writeEnd();

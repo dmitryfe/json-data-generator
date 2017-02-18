@@ -3,7 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.acesinc.data.json.generator.types;
+package net.acesinc.data.json.generator.types.dates;
+
+import net.acesinc.data.json.generator.types.dates.BaseDateType;
 
 import java.util.Date;
 
@@ -11,16 +13,19 @@ import java.util.Date;
  *
  * @author andrewserff
  */
-public class NowType extends NowBaseType {
+public class DateType extends BaseDateType {
 
-    public static final String TYPE_NAME = "now";
-    public static final String TYPE_DISPLAY_NAME = "Now";
+    public static final String TYPE_NAME = "date";
+    public static final String TYPE_DISPLAY_NAME = "Date";
 
+    public DateType() {
+    }
+    
     @Override
     public Date getNextRandomValue() {
-        return getNextDate();
+        return getRandomDate();
     }
-
+    
     @Override
     public String getName() {
         return TYPE_NAME;

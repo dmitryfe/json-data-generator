@@ -9,6 +9,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
+
+import net.acesinc.data.json.generator.types.dates.DateType;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

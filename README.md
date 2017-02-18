@@ -381,8 +381,8 @@ You will start seeing output in your console and data will begin to be generated
 
 ```
 ...
-2015-04-28 14:21:08,013 DEBUG n.a.d.j.g.t.TypeHandlerFactory [Thread-2] Discovered TypeHandler [ integer,net.acesinc.data.json.generator.types.IntegerType ]
-2015-04-28 14:21:08,013 DEBUG n.a.d.j.g.t.TypeHandlerFactory [Thread-2] Discovered TypeHandler [ timestamp,net.acesinc.data.json.generator.types.TimestampType ]
+2015-04-28 14:21:08,013 DEBUG n.a.d.j.g.t.TypeHandlerFactory [Thread-2] Discovered TypeHandler [ integer,net.acesinc.data.json.generator.types.primitives.IntegerType ]
+2015-04-28 14:21:08,013 DEBUG n.a.d.j.g.t.TypeHandlerFactory [Thread-2] Discovered TypeHandler [ timestamp,net.acesinc.data.json.generator.types.dates.TimestampType ]
 2015-04-28 14:30:02,817 INFO data-logger [Thread-2] {"timestamp":1430253002793,"system":"BADGE","actor":"bob","action":"ENTER","objects":["Building 1"],"location":"45.5,44.3","message":"Entered Building 1"}
 2015-04-28 14:30:05,369 INFO data-logger [Thread-2] {"timestamp":1430253005368,"system":"AD","actor":"bob","action":"LOGIN","objects":["workstation1"],"location":null,"message":"Logged in to workstation 1"}
 2015-04-28 14:30:07,491 INFO data-logger [Thread-2] {"timestamp":1430253007481,"system":"AUDIT","actor":"bob","action":"COPY","objects":["/data/file1.txt","/share/mystuff/file2.txt"],"location":null,"message":"Printed /data/file1.txt"}

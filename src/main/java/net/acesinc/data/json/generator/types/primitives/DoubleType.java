@@ -3,7 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.acesinc.data.json.generator.types;
+package net.acesinc.data.json.generator.types.primitives;
+
+import net.acesinc.data.json.generator.types.TypeHandler;
 
 import java.util.Random;
 
