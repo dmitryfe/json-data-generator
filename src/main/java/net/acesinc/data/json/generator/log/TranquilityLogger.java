@@ -45,6 +45,7 @@ import org.joda.time.Period;
 public class TranquilityLogger implements EventLogger {
 
     private static final Logger log = LogManager.getLogger(TranquilityLogger.class);
+    private final String NAME = "Tranquility";
     public static final String OVERLORD_NAME_PROP_NAME = "overlord.name";
     public static final String FIREHOSE_PATTERN_PROP_NAME = "firehose.pattern";
     public static final String DISCOVERY_PATH_PROP_NAME = "discovery.path";
@@ -241,6 +242,11 @@ public class TranquilityLogger implements EventLogger {
         } catch (Exception ex) {
             log.error("Error shutting down Tranquility Logger", ex);
         }
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
 }

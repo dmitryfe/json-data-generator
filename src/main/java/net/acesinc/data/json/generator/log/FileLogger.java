@@ -19,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 public class FileLogger implements EventLogger {
 
     private static final Logger log = LogManager.getLogger(FileLogger.class);
+    private final String NAME = "JSON_EVENT";
     public static final String OUTPUT_DIRECTORY_PROP_NAME = "output.directory";
     public static final String FILE_PREFIX_PROP_NAME = "file.prefix";
     public static final String FILE_EXTENSION_PROP_NAME = "file.extension";
@@ -59,6 +60,11 @@ public class FileLogger implements EventLogger {
     @Override
     public void shutdown() {
         //we don't need to shut anything down
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
 }

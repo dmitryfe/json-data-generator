@@ -6,13 +6,13 @@
 package net.acesinc.data.json.generator;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import net.acesinc.data.json.generator.config.SimulationConfig;
-import net.acesinc.data.json.generator.config.WorkflowConfig;
-import net.acesinc.data.json.generator.config.JSONConfigReader;
+import java.util.*;
+
+import com.google.common.collect.Maps;
+import net.acesinc.data.json.generator.config.*;
 import net.acesinc.data.json.generator.log.EventLogger;
 import net.acesinc.data.json.generator.workflow.Workflow;
+import net.acesinc.data.json.generator.workflow.WorkflowStep;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,11 +40,29 @@ public class SimulationRunner {
 
     private void setupSimulation() {
         running = false;
+
+        // Values from default templates
         for (WorkflowConfig workflowConfig : config.getWorkflows()) {
             try {
                 Workflow w = JSONConfigReader.readConfig(this.getClass().getClassLoader().getResourceAsStream(workflowConfig.getWorkflowFilename()), Workflow.class);
+
+
+                for (WorkflowStep overrideStep : w.getSteps()) {
+                    if (!overrideStep.getProducerConfig().containsKey("template")) break;
+                    String template = (String) overrideStep.getProducerConfig().get("template");
+
+                    WorkflowStep finalStep = ConfigTemplatesHolder.getInstance().getByName(template);
+                    WorkflowStep defaultStep = ConfigTemplatesHolder.getInstance().getByName(template);
+
+                    for(String key : defaultStep.getConfig().get(0).keySet()){
+                        if(overrideStep.getConfig().get(0).containsKey(key))
+                            finalStep.getConfig().get(0).put(key,overrideStep.getConfig().get(0).get(key));
+                    }
+                    overrideStep.getConfig().get(0).putAll(finalStep.getConfig().get(0));
+                }
+
                 final EventGenerator gen = new EventGenerator(w, workflowConfig.getWorkflowName(), eventLoggers);
-                log.info("Adding EventGenerator for [ " + workflowConfig.getWorkflowName()+ "," + workflowConfig.getWorkflowFilename()+ " ]");
+                log.info("Adding EventGenerator for [ " + workflowConfig.getWorkflowName() + "," + workflowConfig.getWorkflowFilename() + " ]");
                 eventGenerators.add(gen);
                 eventGenThreads.add(new Thread(gen));
             } catch (IOException ex) {

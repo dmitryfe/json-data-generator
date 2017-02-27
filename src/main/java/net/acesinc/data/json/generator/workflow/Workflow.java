@@ -22,11 +22,6 @@ public class Workflow {
     private boolean varyRepeatFrequency;
     private String stepRunMode;
 
-    //TODO: Path date format here:
-    private String simpleDateFormatSt;
-
-    //SimpleDateFormat ETP_DF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSSSSS");
-    
     public Workflow() {
         steps = new ArrayList<>();
     }

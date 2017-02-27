@@ -24,6 +24,7 @@ import org.apache.logging.log4j.Logger;
 public class KafkaLogger implements EventLogger {
 
     private static final Logger log = LogManager.getLogger(KafkaLogger.class);
+    private final String NAME = "KAFKA_EVENT";
     public static final String BROKER_SERVER_PROP_NAME = "broker.server";
     public static final String BROKER_PORT_PROP_NAME = "broker.port";
     
@@ -95,6 +96,11 @@ public class KafkaLogger implements EventLogger {
     @Override
     public void shutdown() {
         producer.close();
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
 }

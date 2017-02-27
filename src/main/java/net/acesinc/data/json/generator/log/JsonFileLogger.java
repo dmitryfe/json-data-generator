@@ -23,6 +23,7 @@ public class JsonFileLogger implements EventLogger {
 
 
     private static final Logger log = LogManager.getLogger(JsonFileLogger.class);
+    private final String NAME = "JSON";
 
     private File outputDirectory;
     private String format;
@@ -55,6 +56,11 @@ public class JsonFileLogger implements EventLogger {
     @Override
     public void shutdown() {
         //we don't need to shut anything down
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     private void flushToJSON(String event){

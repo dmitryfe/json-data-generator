@@ -19,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 public class Log4JLogger implements EventLogger {
 
     private static final Logger log = LogManager.getLogger(Log4JLogger.class);
+    private final String NAME = "LOG4J";
     private static final Logger dataLogger = LogManager.getLogger("data-logger");
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -46,6 +47,11 @@ public class Log4JLogger implements EventLogger {
     @Override
     public void shutdown() {
         //nothing to shutdown
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
 }

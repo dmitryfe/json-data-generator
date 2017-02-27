@@ -37,6 +37,7 @@ public class JsonDataGenerator {
             List<EventLogger> loggers = new ArrayList<>();
             for (Map<String, Object> elProps : simConfig.getProducers()) {
                 String elType = (String) elProps.get("type");
+                // TODO: replace with enum
                 switch (elType) {
                     case "json-file": {
                         log.info("Adding File Logger with properties: " + elProps);

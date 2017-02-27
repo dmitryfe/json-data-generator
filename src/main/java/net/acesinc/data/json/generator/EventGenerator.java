@@ -11,10 +11,12 @@ import net.acesinc.data.json.generator.workflow.WorkflowStep;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import scala.reflect.internal.Trees;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -28,6 +30,7 @@ public class EventGenerator implements Runnable {
     private String generatorName;
     private boolean running;
     private List<EventLogger> eventLoggers;
+    private HashMap<String,EventLogger> fileLoggers = new HashMap<>();
     private long startTime;
     private long generatedEvents = 0;
 
@@ -35,6 +38,7 @@ public class EventGenerator implements Runnable {
         this.workflow = configCountModifier(workflow);
         this.generatorName = generatorName;
         this.eventLoggers = loggers;
+        loggers.forEach(l -> fileLoggers.put(l.getName(),l));
     }
 
     private Workflow configCountModifier(Workflow workflow) {
@@ -147,30 +151,22 @@ public class EventGenerator implements Runnable {
                 try {
                     String event = generateEvent(wrapper);
 
-                    // TODO: Logger per event output. Check file extension and make a decision
-
                     if(step.getProducerConfig().containsKey("file")){
-                        // when file defined, logger is per config
-                        Map<String,EventLogger> LoggersMapper = new HashMap<>();
-                        EventLogger loggerSelected;
-
-                        // TODO: handle cases
+                        // TODO: handle casting and missing properties
                         String fileName = (String) step.getProducerConfig().get("file");
                         String format = (String) step.getProducerConfig().get("format");
-                        boolean gzip = (boolean) step.getProducerConfig().get("gzip");
+
                         String path = generatorName + "/" + fileName;
 
 
-
-                        for (EventLogger l : eventLoggers) {
-                            LoggersMapper.put(l.getClass().getSimpleName(),l);
+                        if (!fileLoggers.containsKey(format.toUpperCase()) || fileLoggers.get(format.toUpperCase()) == null){
+                            log.error("Mandatory key 'format' is missing in producerConfig or producer has not been initialised.\n" +
+                                    "Initialised producers are: " + fileLoggers.keySet().toString());
+                            throw new RuntimeException();
+                        } else{
+                            step.getProducerConfig().put("outPath",path);
+                            fileLoggers.get(format.toUpperCase()).logEvent(event, step.getProducerConfig());
                         }
-
-                        step.getProducerConfig().put("outPath",path);
-                        LoggersMapper.get(format).logEvent(event, step.getProducerConfig());
-
-
-
                     } else{
                         for (EventLogger l : eventLoggers) {
                             l.logEvent(event, step.getProducerConfig());

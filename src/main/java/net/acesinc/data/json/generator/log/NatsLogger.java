@@ -14,6 +14,7 @@ import java.util.Map;
  */
 public class NatsLogger implements EventLogger {
     private static final Logger log = LogManager.getLogger(NatsLogger.class);
+    private final String NAME = "NATS";
 
     public static final String NATS_SERVER_PROP_NAME = "broker.server";
     public static final String NATS_PORT_PROP_NAME = "broker.port";
@@ -67,5 +68,10 @@ public class NatsLogger implements EventLogger {
     @Override
     public void shutdown() {
         nats.close();
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 }

@@ -18,6 +18,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
  */
 public class MqttLogger implements EventLogger {
     private static final Logger log = LogManager.getLogger(MqttLogger.class);
+    private final String NAME = "MQTT";
     
     /* Constants fpr Properties names */
     private static final String PRODUCER_TYPE_NAME = "mqtt";
@@ -107,5 +108,10 @@ public class MqttLogger implements EventLogger {
                 log.error("Error in disconnect", ex);
             }
         }
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 }

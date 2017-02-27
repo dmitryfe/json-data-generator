@@ -30,6 +30,7 @@ import org.apache.logging.log4j.Logger;
 public class HttpPostLogger implements EventLogger {
 
     private static final Logger log = LogManager.getLogger(HttpPostLogger.class);
+    private final String NAME = "HTTP_EVENT";
     public static final String URL_PROP_NAME = "url";
 
     private String url;
@@ -90,5 +91,10 @@ public class HttpPostLogger implements EventLogger {
         } catch (IOException ex) {
             //oh well
         }
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 }
