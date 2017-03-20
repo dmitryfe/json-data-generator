@@ -19,8 +19,9 @@ public class RandomType extends TypeHandler {
 
     private List<Object> typedValues;
 
+    // TODO: add support for random ipv4 instead of using the type
     @Override
-    public void setLaunchArguments(String[] launchArguments) {
+    public synchronized void setLaunchArguments(String[] launchArguments) {
         super.setLaunchArguments(launchArguments);
         typedValues = new ArrayList<>();
         for (String s : launchArguments) {
@@ -44,7 +45,8 @@ public class RandomType extends TypeHandler {
     }
 
     @Override
-    public Object getNextRandomValue() {
+    public synchronized Object getNextRandomValue() {
+        // System.out.println(Thread.currentThread().getName() + ":  " + typedValues);
         return typedValues.get(getRand().nextInt(0, typedValues.size() - 1));
     }
 

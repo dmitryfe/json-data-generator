@@ -69,12 +69,11 @@ public class RandomJsonGenerator {
     }
 
     private JsonGenerator processProperties(JsonGenerator gen, Map<String, Object> props, String currentContext) {
-//        Map<String, Object> outputValues = new LinkedHashMap<>();
+
         for (String propName : props.keySet()) {
             Object value = props.get(propName);
 
             if (value == null) {
-//                outputValues.put(propName, null);
                 generatedValues.put(currentContext + propName, null);
                 addValue(gen, propName, null);
             }
@@ -158,7 +157,7 @@ public class RandomJsonGenerator {
 
                 if (!listOfItems.isEmpty()) {
                     //Check if this is a special function at the start of the array
-                    if (String.class.isAssignableFrom(listOfItems.get(0).getClass()) && ((String) listOfItems.get(0)).contains("(")) {
+                    if (String.class.isAssignableFrom(listOfItems.get(0).getClass()) && (((String) listOfItems.get(0)).contains("repeat(") || ((String) listOfItems.get(0)).contains("random("))) {
                         //special function in array
                         String name = (String) listOfItems.get(0);
                         String specialFunc = null;

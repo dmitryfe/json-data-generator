@@ -7,6 +7,7 @@ package net.acesinc.data.json.generator.types;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
@@ -20,7 +21,7 @@ public class DomainIncrementalType extends TypeHandler {
     private Map<String, Long> namedCounterMap;
 
     public DomainIncrementalType() {
-        namedCounterMap = new HashMap<>();
+        namedCounterMap = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -30,9 +31,7 @@ public class DomainIncrementalType extends TypeHandler {
             throw new IllegalArgumentException("You must specify a prefix for the domain name");
         }
         prefixName = launchArguments[0];
-        if (namedCounterMap.get(prefixName) == null) {
-            namedCounterMap.put(prefixName, 1l);
-        }
+        namedCounterMap.putIfAbsent(prefixName, 1L);
     }
     
     @Override

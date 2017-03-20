@@ -293,7 +293,7 @@ public class EventGenerator implements Runnable {
             setRunning(true);
             runWorkflow();
             setRunning(false);
-            System.out.println(Thread.currentThread().getName());
+            log.info("Workflow is completed. " + Thread.currentThread().getName() + " finished.");
         } catch (Throwable ie) {
             log.fatal("Exception occured causing the Generator to shutdown", ie);
             setRunning(false);

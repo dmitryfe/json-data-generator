@@ -13,10 +13,6 @@ import java.io.*;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
-/**
- *
- * @author andrewserff
- */
 
 @SuppressWarnings("Duplicates")
 public class JsonFileLogger implements EventLogger {
@@ -26,31 +22,18 @@ public class JsonFileLogger implements EventLogger {
     private final String NAME = "JSON";
 
     private File outputDirectory;
-    private String format;
-    private boolean gzip;
 
-    public JsonFileLogger(Map<String, Object> props) {}
+    public JsonFileLogger() {}
 
     @Override
     public void logEvent(String event, Map<String, Object> producerConfig) {
-        gzip = producerConfig.containsKey("gzip") && (boolean) producerConfig.get("gzip");
-
-        // TODO: format should be mandatory!
-        format = producerConfig.containsKey("format") ? producerConfig.get("format").toString() : "json";
         String outDir = System.getProperty("user.dir") + "/out/" + producerConfig.get("outPath");
         outputDirectory = new File(outDir);
         logEvent(event);
     }
 
     private void logEvent(String event) {
-        if (!gzip) flushToJSON(event);
-        else {
-            try {
-                flushToJsonGzip(event);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        flushToJSON(event);
     }
 
     @Override
@@ -72,16 +55,10 @@ public class JsonFileLogger implements EventLogger {
     }
 
     private void flushToJsonGzip(String event) throws IOException {
-        FileOutputStream output = new FileOutputStream(outputDirectory);
-        try {
-            Writer writer = new OutputStreamWriter(new GZIPOutputStream(output), "UTF-8");
-            try {
+        try (FileOutputStream output = new FileOutputStream(outputDirectory)) {
+            try (Writer writer = new OutputStreamWriter(new GZIPOutputStream(output), "UTF-8")) {
                 writer.append(event).append("\n");
-            } finally {
-                writer.close();
             }
-        } finally {
-            output.close();
         }
     }
 

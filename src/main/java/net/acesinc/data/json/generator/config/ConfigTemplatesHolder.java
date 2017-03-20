@@ -1,8 +1,6 @@
 package net.acesinc.data.json.generator.config;
 
-import net.acesinc.data.json.generator.content.FileResource;
 import net.acesinc.data.json.generator.workflow.WorkflowStep;
-import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,10 +17,12 @@ public class ConfigTemplatesHolder {
         final File confDir = new File(System.getProperty("user.dir") + "/config_templates/");
 
         for(File f : confDir.listFiles()){
-            try {
-                templatesMap.put(f.getName().toUpperCase().substring(0,f.getName().indexOf(".")),JSONConfigReader.readConfig(f, WorkflowStep.class));
-            } catch (IOException e) {
-                e.printStackTrace();
+            if(!f.isHidden()){
+                try {
+                    templatesMap.put(f.getName().toUpperCase().substring(0,f.getName().indexOf(".")).toUpperCase(),JSONConfigReader.readConfig(f, WorkflowStep.class));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -37,8 +37,8 @@ public class ConfigTemplatesHolder {
     }
 
     public WorkflowStep getByName(String name){
-
-        // todo: add negative
-        return templatesMap.get(name.toUpperCase());
+        if (templatesMap.containsKey(name.toUpperCase())){
+            return templatesMap.get(name.toUpperCase());
+        } else throw new RuntimeException("Template " + name + " not found in /config_templates folder. Add it.");
     }
 }

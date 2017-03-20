@@ -41,12 +41,12 @@ public class JsonDataGenerator {
                 switch (elType) {
                     case "json-file": {
                         log.info("Adding File Logger with properties: " + elProps);
-                        loggers.add(new JsonFileLogger(elProps));
+                        loggers.add(new JsonFileLogger());
                         break;
                     }
                     case "csv-file": {
                         log.info("Adding File Logger with properties: " + elProps);
-                        loggers.add(new CSVFileLogger(elProps));
+                        loggers.add(new CSVFileLogger());
                         break;
                     }
                     case "logger": {
@@ -121,11 +121,12 @@ public class JsonDataGenerator {
 
     public static void main(String[] args) {
 
-        String simConfig = "TestSimulation.json";
+        String simConfig;
+
         if (args.length > 0) {
             simConfig = args[0];
             log.info("Overriding Simulation Config file from command line to use [ " + simConfig + " ]");
-        }
+        } else throw new RuntimeException("SimConfig file name is missing for Main class");
 
         final JsonDataGenerator gen = new JsonDataGenerator(simConfig);
 

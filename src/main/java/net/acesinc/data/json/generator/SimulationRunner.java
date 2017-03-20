@@ -8,7 +8,6 @@ package net.acesinc.data.json.generator;
 import java.io.IOException;
 import java.util.*;
 
-import com.google.common.collect.Maps;
 import net.acesinc.data.json.generator.config.*;
 import net.acesinc.data.json.generator.log.EventLogger;
 import net.acesinc.data.json.generator.workflow.Workflow;
@@ -32,8 +31,8 @@ public class SimulationRunner {
     public SimulationRunner(SimulationConfig config, List<EventLogger> loggers) {
         this.config = config;
         this.eventLoggers = loggers;
-        eventGenerators = new ArrayList<EventGenerator>();
-        eventGenThreads = new ArrayList<Thread>();
+        eventGenerators = new ArrayList<>();
+        eventGenThreads = new ArrayList<>();
         
         setupSimulation();
     }
@@ -45,7 +44,6 @@ public class SimulationRunner {
         for (WorkflowConfig workflowConfig : config.getWorkflows()) {
             try {
                 Workflow w = JSONConfigReader.readConfig(this.getClass().getClassLoader().getResourceAsStream(workflowConfig.getWorkflowFilename()), Workflow.class);
-
 
                 for (WorkflowStep overrideStep : w.getSteps()) {
                     if (!overrideStep.getProducerConfig().containsKey("template")) break;
@@ -94,6 +92,13 @@ public class SimulationRunner {
     }
 
     public boolean isRunning() {
+        if (eventGenThreads.size() > 0) {
+            boolean isAlive=false;
+            for (Thread t : eventGenThreads) {
+                isAlive |= t.isAlive();
+            }
+            running = isAlive;
+        }
         return running;
     }
 

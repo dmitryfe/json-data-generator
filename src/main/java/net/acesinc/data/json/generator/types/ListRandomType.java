@@ -11,14 +11,23 @@ import net.acesinc.data.json.generator.context.SinkholedResources;
  *
  * @author andrewserff
  */
-public class SinkholeNameserverType extends TypeHandler {
+public class ListRandomType extends TypeHandler {
 
-    public static final String TYPE_NAME = "sinkholeNS";
-    public static final String TYPE_DISPLAY_NAME = "Sinkhole Name Server";
+    //TODO
+
+    public static final String TYPE_NAME = "listRandom";
+    public static final String TYPE_DISPLAY_NAME = "Random entity from a list";
+
+    @Override
+    public synchronized void setLaunchArguments(String[] launchArguments) {
+        super.setLaunchArguments(launchArguments);
+    }
+
+
 
     @Override
     public String getNextRandomValue() {
-        return SinkholedResources.getInstance().getRandomSinkholeNameserver();
+        return SinkholedResources.getInstance().getRandomSinkholeMail();
 
     }
 

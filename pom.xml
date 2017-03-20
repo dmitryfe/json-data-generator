@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.acesinc.data</groupId>
-    <artifactId>json-data-generator</artifactId>
+    <artifactId>file-generator</artifactId>
     <packaging>jar</packaging>
-    <version>1.2.2-SNAPSHOT</version>
+    <version>1.0</version>
     <name>${project.artifactId}</name>
     <description>A robust, generic, streaming random json data generator for your data</description>
     <url>https://github.com/acesinc/json-data-generator</url>
@@ -22,13 +22,6 @@
             <url>http://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </licenses>
-
-    <developers>
-        <developer>
-            <name>Andrew Serff</name>
-            <url>https://github.com/andrewserff</url>
-        </developer>
-    </developers>
 
     <properties>
         <org.slf4j-version>1.7.1</org.slf4j-version>
@@ -122,11 +115,6 @@
             <groupId>org.eclipse.paho</groupId>
             <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
             <version>1.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>net.sf.supercsv</groupId>
-            <artifactId>super-csv</artifactId>
-            <version>2.4.0</version>
         </dependency>
     </dependencies>
     <repositories>

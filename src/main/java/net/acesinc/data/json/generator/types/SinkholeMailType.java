@@ -5,7 +5,7 @@
  */
 package net.acesinc.data.json.generator.types;
 
-import net.acesinc.data.json.generator.content.FileResource;
+import net.acesinc.data.json.generator.context.SinkholedResources;
 
 /**
  *
@@ -18,7 +18,7 @@ public class SinkholeMailType extends TypeHandler {
 
     @Override
     public String getNextRandomValue() {
-        return FileResource.getInstance().getRamdomSinkholeMail();
+        return SinkholedResources.getInstance().getRandomSinkholeMail();
 
     }
 

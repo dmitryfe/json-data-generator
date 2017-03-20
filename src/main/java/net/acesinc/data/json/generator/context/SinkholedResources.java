@@ -1,4 +1,4 @@
-package net.acesinc.data.json.generator.content;
+package net.acesinc.data.json.generator.context;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.math3.random.RandomDataGenerator;
@@ -9,14 +9,15 @@ import java.util.List;
 /**
  * Created by dfeshenk on 16/02/2017.
  */
-public class FileResource {
+public class SinkholedResources {
 
-    private final String sinkholeFolderPath = "sinkhole/";
+    //TODO: make generic list by its path
+
+    private final String sinkholeFolderPath = "common/";
     private  List<String> sinkholeNameservers;
     private  List<String> sinkholeMails;
-    public static final String RESOURCE_NAME="sinkhole";
 
-    private FileResource() {
+    private SinkholedResources() {
         try {
             sinkholeNameservers = IOUtils.readLines(getClass().getClassLoader().getResourceAsStream(sinkholeFolderPath + "sinkhole_nameservers.csv"));
             sinkholeMails = IOUtils.readLines(getClass().getClassLoader().getResourceAsStream(sinkholeFolderPath + "sinkhole_mails.csv"));
@@ -26,11 +27,11 @@ public class FileResource {
     }
 
     private static class Holder {
-        static final FileResource INSTANCE = new FileResource();
+        static final SinkholedResources INSTANCE = new SinkholedResources();
     }
 
 
-    public static FileResource getInstance() {
+    public static SinkholedResources getInstance() {
         return Holder.INSTANCE;
     }
 
@@ -47,13 +48,9 @@ public class FileResource {
         return sinkholeNameservers.get(rand.getRandomGenerator().nextInt(sinkholeNameservers.size()));
     }
 
-    public String getRamdomSinkholeMail(){
+    public String getRandomSinkholeMail(){
         RandomDataGenerator rand = new RandomDataGenerator();
         return sinkholeMails.get(rand.getRandomGenerator().nextInt(sinkholeMails.size()));
     }
-
-
-
-
 
 }
