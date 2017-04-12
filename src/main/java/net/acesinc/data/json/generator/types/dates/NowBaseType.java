@@ -19,6 +19,9 @@ public abstract class NowBaseType extends TypeHandler {
 
     private long timeToAdd = 0;
     private String dateTimeFormat = "yyyy/MM/dd HH:mm:ss.SS";
+    // TODO: move from here
+    public static final Date GEN_START_TIME = new Date();
+    private boolean fromGenStart = false;
     
     @Override
     public void setLaunchArguments(String[] launchArguments) {
@@ -30,6 +33,11 @@ public abstract class NowBaseType extends TypeHandler {
             if (arg.contains("_")){
                 timeToAdd = getTimeOffset(arg);
             }
+
+            if (arg.contains("GEN-START-TIME")) {
+                fromGenStart = true;
+            }
+
             if (arg.contains(":")){
                 dateTimeFormat = arg;
             }
@@ -83,9 +91,9 @@ public abstract class NowBaseType extends TypeHandler {
 
     public Date getNextDate() {
         if (timeToAdd == 0) {
-            return new Date();
+            return fromGenStart ? GEN_START_TIME : new Date();
         } else {
-            return new Date(new Date().getTime() + timeToAdd);
+            return fromGenStart ? new Date(GEN_START_TIME.getTime() + timeToAdd) : new Date(new Date().getTime() + timeToAdd);
         }
     }
 

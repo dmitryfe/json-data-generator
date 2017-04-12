@@ -49,6 +49,11 @@ public class JsonDataGenerator {
                         loggers.add(new CSVFileLogger());
                         break;
                     }
+                    case "avro": {
+                        log.info("Adding File Logger with properties: " + elProps);
+                        loggers.add(new AvroFileLogger());
+                        break;
+                    }
                     case "logger": {
                         log.info("Adding Log4JLogger Producer");
                         loggers.add(new Log4JLogger());

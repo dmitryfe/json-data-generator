@@ -116,6 +116,11 @@
             <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
             <version>1.0.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro</artifactId>
+            <version>1.8.1</version>
+        </dependency>
     </dependencies>
     <repositories>
         <!-- These are set in the settings.xml to our nexus repo -->

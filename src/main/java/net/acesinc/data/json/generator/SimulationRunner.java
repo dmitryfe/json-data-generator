@@ -45,18 +45,18 @@ public class SimulationRunner {
             try {
                 Workflow w = JSONConfigReader.readConfig(this.getClass().getClassLoader().getResourceAsStream(workflowConfig.getWorkflowFilename()), Workflow.class);
 
-                for (WorkflowStep overrideStep : w.getSteps()) {
-                    if (!overrideStep.getProducerConfig().containsKey("template")) break;
-                    String template = (String) overrideStep.getProducerConfig().get("template");
+                for (WorkflowStep simConfigStep : w.getSteps()) {
+                    if (!simConfigStep.getProducerConfig().containsKey("template")) break;
+                    String template = (String) simConfigStep.getProducerConfig().get("template");
 
-                    WorkflowStep finalStep = ConfigTemplatesHolder.getInstance().getByName(template);
-                    WorkflowStep defaultStep = ConfigTemplatesHolder.getInstance().getByName(template);
+                    WorkflowStep templateStep = ConfigTemplatesHolder.getInstance().getByName(template);
 
-                    for(String key : defaultStep.getConfig().get(0).keySet()){
-                        if(overrideStep.getConfig().get(0).containsKey(key))
-                            finalStep.getConfig().get(0).put(key,overrideStep.getConfig().get(0).get(key));
+                    for(String key : templateStep.getConfig().get(0).keySet()){
+                        if(simConfigStep.getConfig().get(0).containsKey(key))
+                            templateStep.getConfig().get(0).put(key,simConfigStep.getConfig().get(0).get(key));
                     }
-                    overrideStep.getConfig().get(0).putAll(finalStep.getConfig().get(0));
+                    simConfigStep.getConfig().get(0).clear();
+                    simConfigStep.getConfig().get(0).putAll(templateStep.getConfig().get(0));
                 }
 
                 final EventGenerator gen = new EventGenerator(w, workflowConfig.getWorkflowName(), eventLoggers);

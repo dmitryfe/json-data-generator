@@ -202,6 +202,11 @@ public class RandomJsonGenerator {
 
                                 if(th != null){
                                     Object val = th.getNextRandomValue();
+                                    if (List.class.isAssignableFrom(value.getClass())) {
+                                        subList.clear();
+                                        subList.addAll((Collection<?>) val);
+                                        break;
+                                    }
                                     subList.set(i,val);
                                 }
 

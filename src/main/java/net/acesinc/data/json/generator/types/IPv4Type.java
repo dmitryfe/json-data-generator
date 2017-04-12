@@ -19,6 +19,11 @@ public class IPv4Type extends TypeHandler {
     public static final String TYPE_DISPLAY_NAME = "Ipv4";
 
     @Override
+    public synchronized void setLaunchArguments(String[] launchArguments) {
+        super.setLaunchArguments(launchArguments);
+    }
+
+    @Override
     public Object getNextRandomValue() {
         Random random = new Random();
         return random.nextInt(251) + "." + random.nextInt(256) + "." + random.nextInt(256) + "." + random.nextInt(256);

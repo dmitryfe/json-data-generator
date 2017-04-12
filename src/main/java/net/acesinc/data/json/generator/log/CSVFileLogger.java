@@ -24,15 +24,24 @@ public class CSVFileLogger implements EventLogger {
     private final String NAME = "CSV";
 
     private Map<String,String[]> headers = new HashMap<>();
-    private String outputDirectory;
+    private String outputDirPath;
     private File outputFile;
 
     public CSVFileLogger() {}
 
     @Override
     public void logEvent(String event, Map<String, Object> producerConfig) {
-        outputDirectory = System.getProperty("user.dir") + "/out/" + producerConfig.get("outPath");
-        outputFile = new File(outputDirectory);
+
+        outputDirPath = System.getProperty("user.dir") + "/out/" + producerConfig.get("outPath");
+        outputFile = new File(outputDirPath);
+
+        File outputDirectory = new File(outputDirPath.substring(0,outputDirPath.lastIndexOf("/")));
+
+        if (!outputDirectory.exists()) {
+            log.info("Creating path " + outputDirectory.getAbsolutePath());
+            outputDirectory.mkdirs();
+        }
+
         logEvent(event);
     }
 
@@ -53,7 +62,7 @@ public class CSVFileLogger implements EventLogger {
 
         try {
 
-            if(!headers.containsKey(outputDirectory)){
+            if(!headers.containsKey(outputDirPath)){
                 setHeader(event);
             }
 
@@ -62,7 +71,7 @@ public class CSVFileLogger implements EventLogger {
 
             List<String> nextLine = new LinkedList<>();
 
-            for(String field : headers.get(outputDirectory)){
+            for(String field : headers.get(outputDirPath)){
                 nextLine.add(result.get(field).toString());
             }
 
@@ -75,13 +84,13 @@ public class CSVFileLogger implements EventLogger {
     }
 
     private synchronized void setHeader(String event) {
-        if(!headers.containsKey(outputDirectory)){
+        if(!headers.containsKey(outputDirPath)){
             if(!outputFile.exists()){
                 try {
                     // Take header from JSON
                     String[] newHeader = getHeader(event);
                     log.info("Going to set new header for the file: " + outputFile.getAbsolutePath() + "\nHeader: " + Arrays.toString(newHeader));
-                    headers.put(outputDirectory,newHeader);
+                    headers.put(outputDirPath,newHeader);
 
                     CSVWriter writer = new CSVWriter(new FileWriter(outputFile, true));
                     writer.writeNext(newHeader);
@@ -93,7 +102,7 @@ public class CSVFileLogger implements EventLogger {
                 // Take from file
                 String[] newHeader = getHeaderFromFile();
                 log.info("Reading the header from file: " + outputFile.getAbsolutePath() + "\nHeader: " + Arrays.toString(newHeader));
-                headers.put(outputDirectory,newHeader);
+                headers.put(outputDirPath,newHeader);
 
             }
         }
@@ -125,7 +134,7 @@ public class CSVFileLogger implements EventLogger {
 
 
     private void flushToJsonGzip(String event) throws IOException {
-        FileOutputStream output = new FileOutputStream(outputDirectory);
+        FileOutputStream output = new FileOutputStream(outputDirPath);
         try {
             Writer writer = new OutputStreamWriter(new GZIPOutputStream(output), "UTF-8");
             try {
