@@ -30,7 +30,7 @@ public class CounterType extends TypeHandler {
             throw new IllegalArgumentException("You must specify a name for the Counter");
         }
         currentCounterName = launchArguments[0];
-        namedCounterMap.putIfAbsent(currentCounterName, 0l);
+        namedCounterMap.putIfAbsent(currentCounterName, 0L);
     }
     
     @Override

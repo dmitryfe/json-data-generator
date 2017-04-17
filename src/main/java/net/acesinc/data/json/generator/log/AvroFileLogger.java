@@ -23,8 +23,6 @@ import java.util.Map;
 
 @SuppressWarnings("Duplicates")
 public class AvroFileLogger implements EventLogger {
-
-
     private static final Logger log = LogManager.getLogger(AvroFileLogger.class);
     private final String NAME = "AVRO";
     private Map<String,Schema> schemasMap = new HashMap<>();
@@ -36,23 +34,30 @@ public class AvroFileLogger implements EventLogger {
 
     @Override
     public void logEvent(String event, Map<String, Object> producerConfig) {
-        String outDir = System.getProperty("user.dir") + "/out/" + producerConfig.get("outPath").toString().replaceAll("\\$\\{ts}", getTsString(event));
+        synchronized (this){
+            String outDir = System.getProperty("user.dir") + "/out/" + producerConfig.get("outPath").toString().replaceAll("\\$\\{ts}", getTsString(event));
 
-        if(!producerConfig.containsKey("schema")) throw new RuntimeException("'schema' property must be defined in producerConfig for Avro type files generation");
-        String schemaName = producerConfig.get("schema").toString();
+            if(!producerConfig.containsKey("schema")) throw new RuntimeException("'schema' property must be defined in producerConfig for Avro type files generation");
+            String schemaName = producerConfig.get("schema").toString();
 
-        File outputDirectory = new File(outDir.substring(0,outDir.lastIndexOf("/")));
-        outputFile = new File(outDir);
-        if (!outputDirectory.exists()) {
-            log.info("Creating path "+ outputDirectory.getAbsolutePath());
-            outputDirectory.mkdirs();
+            File outputDirectory = new File(outDir.substring(0,outDir.lastIndexOf("/")));
+            outputFile = new File(outDir);
+            if (!outputDirectory.exists()) {
+                log.info("Creating path "+ outputDirectory.getAbsolutePath());
+                outputDirectory.mkdirs();
+            }
+
+            if(!schemasMap.containsKey(schemaName)) setNewSchema(schemaName);
+            logEvent(event,schemaName);
         }
 
-        if(!schemasMap.containsKey(schemaName)) setNewSchema(schemaName);
-        logEvent(event,schemaName);
     }
 
-    private synchronized void setNewSchema(String schemaName){
+    private synchronized void logEvent(String event,String schemaName) {
+        flushToAvro(event,schemaName,setNewWriter(schemasMap.get(schemaName)));
+    }
+
+    private void setNewSchema(String schemaName){
         Schema schema = null;
         try {
             schema = new Schema.Parser().parse(AvroResources.getInstance().getShemaByName(schemaName.toUpperCase()));
@@ -63,7 +68,7 @@ public class AvroFileLogger implements EventLogger {
         }
     }
 
-    private synchronized DataFileWriter setNewWriter(Schema schema){
+    private DataFileWriter setNewWriter(Schema schema){
         try {
             DataFileWriter dataFileWriter = new  DataFileWriter<>(new GenericDatumWriter<>(schema));
             dataFileWriter.setCodec(CodecFactory.deflateCodec(DEFLATE_COMPRESSION_LEVEL));
@@ -81,11 +86,6 @@ public class AvroFileLogger implements EventLogger {
     }
 
 
-
-    private synchronized void logEvent(String event,String schemaName) {
-        flushToAvro(event,schemaName,setNewWriter(schemasMap.get(schemaName)));
-    }
-
     @Override
     public void shutdown() {
         //we don't need to shut anything down
@@ -96,7 +96,7 @@ public class AvroFileLogger implements EventLogger {
         return NAME;
     }
 
-    private synchronized void flushToAvro(String event, String schemaName,DataFileWriter dataFileWriter){
+    private void flushToAvro(String event, String schemaName,DataFileWriter dataFileWriter){
         try {
 
             DatumReader<GenericRecord> reader = new GenericDatumReader<>(schemasMap.get(schemaName));

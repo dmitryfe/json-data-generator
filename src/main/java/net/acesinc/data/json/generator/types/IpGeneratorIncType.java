@@ -22,7 +22,6 @@ public class IpGeneratorIncType extends TypeHandler {
 
     @Override
     public synchronized void setLaunchArguments(String[] launchArguments) {
-
         super.setLaunchArguments(launchArguments);
         startIP = launchArguments[0];
         endIP = launchArguments[1];
@@ -31,7 +30,7 @@ public class IpGeneratorIncType extends TypeHandler {
 
 
     @Override
-    public List<Object> getNextRandomValue() {
+    public synchronized List<Object> getNextRandomValue() {
         long start = ipToLong(startIP);
         long end = ipToLong(endIP)+1;
 
