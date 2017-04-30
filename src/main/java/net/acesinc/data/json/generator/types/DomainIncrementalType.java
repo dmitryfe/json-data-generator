@@ -5,6 +5,7 @@
  */
 package net.acesinc.data.json.generator.types;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,16 +31,15 @@ public class DomainIncrementalType extends TypeHandler {
     @Override
     public synchronized void setLaunchArguments(String[] launchArguments) {
         super.setLaunchArguments(launchArguments);
-        if (launchArguments.length == 0) {
+        if (launchArguments.length == 0)
             throw new IllegalArgumentException("You must specify a prefix for the domain name");
-        }
-        prefixName = launchArguments[0];
 
         minIndex = launchArguments.length > 1 ? Long.parseLong(launchArguments[1]) : 1L;
         long maxIndex = launchArguments.length > 2 ? Long.parseLong(launchArguments[2]) : -1;
 
+        prefixName = launchArguments[0]+"$$$"+minIndex+"_"+maxIndex;
         namedCounterMap.putIfAbsent(prefixName, minIndex);
-        maxIndexMap.put(prefixName,maxIndex);
+        maxIndexMap.putIfAbsent(prefixName,maxIndex);
     }
     
     @Override
@@ -50,7 +50,7 @@ public class DomainIncrementalType extends TypeHandler {
             namedCounterMap.put(prefixName, minIndex);
         }
         namedCounterMap.put(prefixName, count + 1);
-        return prefixName+"-"+ String.format("%06d", count) +".domain.ru.";
+        return prefixName.substring(0,prefixName.indexOf("$$$")) +"-"+ String.format("%06d", count) +".domain.ru.";
     }
             
     @Override
