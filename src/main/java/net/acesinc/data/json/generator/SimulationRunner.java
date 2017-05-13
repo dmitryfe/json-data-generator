@@ -43,6 +43,7 @@ public class SimulationRunner {
         // Values from default templates
         for (WorkflowConfig workflowConfig : config.getWorkflows()) {
             try {
+                log.info("Loading config file: " + workflowConfig.getWorkflowFilename());
                 Workflow w = JSONConfigReader.readConfig(this.getClass().getClassLoader().getResourceAsStream(workflowConfig.getWorkflowFilename()), Workflow.class);
 
                 for (WorkflowStep simConfigStep : w.getSteps()) {

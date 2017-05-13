@@ -6,3 +6,7 @@ config_templates/
 avro/
 cluster_conf/
 src/main/resources/
+.idea/
+json-data-generator.iml
+src/main/java/net/acesinc/data/json/util/HiveJdbcClient.java
+tmp/

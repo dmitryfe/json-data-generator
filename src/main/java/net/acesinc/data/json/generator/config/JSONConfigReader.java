@@ -34,6 +34,7 @@ public class JSONConfigReader {
     }
     
     public static <T> T readConfig(File input, Class<T> targetClass) throws IOException {
+        log.info("Reading config " + input.getName());
         return readConfig(new FileInputStream(input), targetClass);
     }
     

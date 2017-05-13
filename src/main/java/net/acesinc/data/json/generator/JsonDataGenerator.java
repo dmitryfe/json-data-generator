@@ -117,6 +117,7 @@ public class JsonDataGenerator {
     }
 
     private SimulationConfig getSimConfig() throws IOException {
+        log.info("Loading Simulation Config " + simConfigFile);
         return JSONConfigReader.readConfig(this.getClass().getClassLoader().getResourceAsStream(simConfigFile), SimulationConfig.class);
     }
 

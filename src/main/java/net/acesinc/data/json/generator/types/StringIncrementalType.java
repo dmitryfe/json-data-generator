@@ -5,10 +5,12 @@
  */
 package net.acesinc.data.json.generator.types;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import net.acesinc.data.json.generator.log.CSVFileLogger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
@@ -16,15 +18,17 @@ import java.util.Map;
  */
 public class StringIncrementalType extends TypeHandler {
 
+    private static final Logger log = LogManager.getLogger(StringIncrementalType.class);
+
     public static final String TYPE_NAME = "stringIncremental";
     public static final String TYPE_DISPLAY_NAME = "String Incremental";
 
     private List<String> typedValues;
-    private Map<Integer,Integer> hashIndexMap = new HashMap<>();
-    private int hash;
+    private static Map<Long,Integer> hashIndexMap = new ConcurrentHashMap<>();
+    private long hash;
 
     @Override
-    public void setLaunchArguments(String[] launchArguments) {
+    public synchronized void setLaunchArguments(String[] launchArguments) {
         super.setLaunchArguments(launchArguments);
         typedValues = new ArrayList<>();
         for (String s : launchArguments) {
@@ -33,17 +37,33 @@ public class StringIncrementalType extends TypeHandler {
 
         hash = getArrHash(typedValues);
 
-        if (!hashIndexMap.containsKey(hash)) {
-            hashIndexMap.put(hash, 0);
-        }
+        hashIndexMap.putIfAbsent(hash, 0);
+
+        log.trace("set hash: " + hash);
+        log.trace("hashIndexMap0: " + Collections.singletonList(hashIndexMap));
 
     }
 
     @Override
-    public String getNextRandomValue() {
+    public synchronized String getNextRandomValue() {
 
         int index = hashIndexMap.get(hash);
-        return typedValues.get(hashIndexMap.put(hash, (index + 1) % typedValues.size()));
+        log.trace("index: " + index);
+        log.trace("hash: " + hash);
+
+        int nextIdx = (index + 1) % typedValues.size();
+        log.trace("arr size: " + typedValues.size());
+        log.trace("next index: " + nextIdx);
+        int prevIdx = hashIndexMap.put(hash, nextIdx);
+
+        String b = typedValues.get(prevIdx);
+
+
+        log.trace("prevIdx: " + prevIdx);
+        log.trace("DOMAIN: " + b);
+        log.trace("hashIndexMap: " + Collections.singletonList(hashIndexMap));
+
+        return b;
     }
 
     @Override
@@ -51,7 +71,7 @@ public class StringIncrementalType extends TypeHandler {
         return TYPE_NAME;
     }
 
-    private static int getArrHash(List<String> list){
+    private synchronized static long getArrHash(List<String> list){
         final int prime = 31;
         int result = 1;
         for(String st : list){

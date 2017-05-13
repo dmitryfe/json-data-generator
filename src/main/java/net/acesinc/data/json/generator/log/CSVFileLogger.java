@@ -30,7 +30,7 @@ public class CSVFileLogger implements EventLogger {
     public CSVFileLogger() {}
 
     @Override
-    public void logEvent(String event, Map<String, Object> producerConfig) {
+    public synchronized void logEvent(String event, Map<String, Object> producerConfig) {
 
         outputDirPath = System.getProperty("user.dir") + "/out/" + producerConfig.get("outPath");
         outputFile = new File(outputDirPath);
@@ -45,7 +45,7 @@ public class CSVFileLogger implements EventLogger {
         logEvent(event);
     }
 
-    private void logEvent(String event) {
+    private synchronized void logEvent(String event) {
         flushToCSV(event);
     }
 
@@ -58,7 +58,7 @@ public class CSVFileLogger implements EventLogger {
     }
 
 
-    private void flushToCSV(String event) {
+    private synchronized void flushToCSV(String event) {
 
         try {
 
@@ -108,7 +108,7 @@ public class CSVFileLogger implements EventLogger {
         }
     }
 
-    private String[] getHeader(String event){
+    private synchronized String[] getHeader(String event){
         try {
             LinkedHashMap result = new ObjectMapper().readValue(event, LinkedHashMap.class);
             Set<String> keys = result.keySet();
@@ -120,7 +120,7 @@ public class CSVFileLogger implements EventLogger {
 
     }
 
-    private String[] getHeaderFromFile(){
+    private synchronized String[] getHeaderFromFile(){
         try {
             CSVReader reader = new CSVReader(new FileReader(outputFile));
             return reader.readNext();
