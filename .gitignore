@@ -10,3 +10,4 @@ src/main/resources/
 json-data-generator.iml
 src/main/java/net/acesinc/data/json/util/HiveJdbcClient.java
 tmp/
+resources/

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
@@ -22,7 +23,7 @@ public class LongIncrementalType extends TypeHandler {
     public static final String TYPE_DISPLAY_NAME = "Long Incremental";
 
     private List<String> typedValues;
-    private Map<Integer,Integer> hashIndexMap = new HashMap<>();
+    private static Map<Integer,Integer> hashIndexMap = new ConcurrentHashMap<>();
     private int hash;
 
     @Override
