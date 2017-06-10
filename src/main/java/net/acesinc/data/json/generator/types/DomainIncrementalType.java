@@ -19,9 +19,9 @@ public class DomainIncrementalType extends TypeHandler {
     public static final String TYPE_DISPLAY_NAME = "Domain Incremental";
 
     private String prefixName;
-    private Map<String, Long> maxIndexMap;
+    private static Map<String, Long> maxIndexMap;
     private long minIndex;
-    private Map<String, Long> namedCounterMap;
+    private static Map<String, Long> namedCounterMap;
 
     public DomainIncrementalType() {
         namedCounterMap = new ConcurrentHashMap<>();
@@ -50,7 +50,13 @@ public class DomainIncrementalType extends TypeHandler {
             namedCounterMap.put(prefixName, minIndex);
         }
         namedCounterMap.put(prefixName, count + 1);
-        return prefixName.substring(0,prefixName.indexOf("$$$")) +"-"+ String.format("%06d", count) +".domain.ru.";
+        if(prefixName.toLowerCase().contains("primary")){
+            return prefixName.substring(0,prefixName.indexOf("$$$")) +"-"+ String.format("%06d", count) +".ru.";
+        }
+        else{
+            return prefixName.substring(0,prefixName.indexOf("$$$")) +"-"+ String.format("%06d", count) +".domain.ru.";
+        }
+
     }
             
     @Override
